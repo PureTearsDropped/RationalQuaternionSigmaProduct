@@ -588,3 +588,85 @@ def self_test():
 
 if __name__ == '__main__':
     self_test()
+
+
+# ---------------------------------------------------------------- the formula: the network is symbolic by construction
+def _q_str(q, digits=4, snap=None):
+    """a quaternion as text: an integer component exactly, a float to `digits`; with `snap`, a float within
+    snap·max(1,|c|) of a fraction with denominator ≤ 12 is shown as that fraction with ≈ (a decision, marked)."""
+    from fractions import Fraction
+    parts = []
+    for c, e in zip([float(v) for v in q], ('', 'i', 'j', 'k')):
+        if c == 0:
+            continue
+        mag, neg = abs(c), c < 0
+        if mag == int(mag):
+            txt = str(int(mag))
+        else:
+            txt = f'{mag:.{digits}f}'
+            if snap is not None:
+                fr = Fraction(mag).limit_denominator(12)
+                if abs(float(fr) - mag) <= snap * max(1.0, mag):
+                    txt = '≈' + (str(fr) if fr.denominator != 1 else str(fr.numerator))
+        if txt == '1' and e:
+            txt = ''
+        parts.append((neg, txt + e))
+    if not parts:
+        return '0'
+    s = ('−' if parts[0][0] else '') + parts[0][1]
+    for neg, t in parts[1:]:
+        s += (' − ' if neg else ' + ') + t
+    return s
+
+
+def _w_str(state, primes):
+    fr = state.fractions(primes)
+    parts = []
+    for f, e in zip(fr, ('', 'i', 'j', 'k')):
+        if f == 0:
+            continue
+        t = str(f) if f != 1 or not e else ''
+        if f == -1 and e:
+            t = '-'
+        parts.append(t + e)
+    if not parts:
+        return '0'
+    s = parts[0]
+    for p in parts[1:]:
+        s += (' − ' + p[1:]) if p.startswith('-') else (' + ' + p)
+    return s.replace('-', '−', 1) if s.startswith('-') else s
+
+
+def formula(network, coeff=None, names=None, digits=4, snap=None, group=None):
+    """the network as a readable expression.  names: input names (default X₀, X₁, …; a name may itself be a formula, for
+    a layer fed by another).  Pow_L(H, W) prints as Exp((W)·Log H), Pow_R as Exp(Log H·(W)); X⁻¹ as H⁻¹; the right
+    basis as ·i/·j/·k; the readout as (A_n)·[unit].  coeff: [M,4] (or [G,M,4] with `group`)."""
+    sub = '₀₁₂₃₄₅₆₇₈₉'
+    if names is None:
+        names = [f'X{"".join(sub[int(d)] for d in str(j))}' for j in range(64)]
+    def factor_str(f):
+        h = names[f.input_index]
+        if f.reciprocal:
+            h = (h if h.startswith('(') or len(h) <= 3 else f'({h})') + '⁻¹'
+        for layer in f.exponent_layers:
+            w = _w_str(layer.state, network.primes)
+            h = f'Exp(({w})·Log {h})' if layer.side == 'L' else f'Exp(Log {h}·({w}))'
+        return h
+    units = []
+    for unit in network.units:
+        s = '·'.join(factor_str(f) for f in unit.factors)
+        if unit.right_basis:
+            s += '·' + 'ijk'[unit.right_basis - 1]
+        units.append(s)
+    if coeff is None:
+        return '  +  '.join(f'A{"".join(sub[int(d)] for d in str(n))}·[{u}]' for n, u in enumerate(units))
+    c = coeff.detach().cpu().numpy() if torch.is_tensor(coeff) else np.asarray(coeff, dtype=np.float64)
+    if c.ndim == 3:
+        c = c[group or 0]
+    terms = []
+    for n, u in enumerate(units):
+        a = _q_str(c[n], digits, snap)
+        if a == '0':
+            continue
+        terms.append(f'({a})·[{u}]' if a != '1' else f'[{u}]')
+    return '  +  '.join(terms) if terms else '0'

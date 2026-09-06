@@ -41,6 +41,13 @@ keeps — the network is the quaternion successor of
   Nothing downstream produces NaN or Inf.  A sample the arithmetic cannot vouch for is excluded from the fit and from
   the search's loss; a silently clipped number never enters.  Pow(x, W): x is the base (the input), W the exponent.
 
+`formula(network, coeff, names=…)` prints the network as an expression — the structure is symbolic by construction
+(rational exponents, order, right basis); only the readout A is a float, and `snap=1e-3` shows a coefficient as a
+fraction with ≈ when one with denominator ≤ 12 is that close (a marked decision, never silent):
+
+    Z = (0.7 − 0.1i + 0.2j + 0.05k)·[Exp(Log X·(1 + 1/2i))]                        # demo 3, as found
+    y = (0.7 − 0.1i + 0.2j + 0.05k)·[Exp((1/2)·Log ([X₁] + [X₂]))·X₃]              # two layers: layer 1's formula names layer 2's input
+
 ## Is it the reference's network?
 
 `physics/parity_check.py` compares the features of 60 random structures (1–3 units, 1–3 factors, X or X⁻¹, 0–2
