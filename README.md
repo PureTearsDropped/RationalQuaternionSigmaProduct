@@ -1,5 +1,7 @@
 # RationalQuaternionSigmaProduct
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22443844.svg)](https://doi.org/10.5281/zenodo.22443844)
+
 A **rational-quaternion Σ-Product network** on total arithmetic: quaternion inputs, exponent layers stacked
 in depth with exponents W ∈ ℍ_ℚ generated from natural-number prime valuations, ordered Hamilton products,
 a fixed right basis, and a quaternion-linear Σ readout solved by least squares — with the structure found by
@@ -105,6 +107,7 @@ boundaries are values with flags rather than clamps.  The name avoids "QPU", whi
 - The flag logic runs in Python over the four output components; the search is ~50× slower than the reference on the CPU.
 - `numpy.round(x, 3)` on float32 values near 1e38 overflows to inf — a display trap, not an arithmetic one.
 
-License: 0BSD.  Cite with `CITATION.cff` (please record the commit ID and the total-arith-cuda version).
+License: 0BSD.  Cite with `CITATION.cff` (please record the commit ID and the total-arith-cuda version).  Archived on Zenodo:
+concept DOI [10.5281/zenodo.22443844](https://doi.org/10.5281/zenodo.22443844) (all versions), v1.0.0 [10.5281/zenodo.22443845](https://doi.org/10.5281/zenodo.22443845).
 
 ⚠️ AI-assisted; verify. / 生成AI使用・要検証
