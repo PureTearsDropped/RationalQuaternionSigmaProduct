@@ -1,0 +1,36 @@
+demo 1  y = x1·x2 (no exponent layer)
+  reference MSE 1.741e-30  A = [ 1. -0. -0.  0.]
+  total     MSE 9.505e-15  A = [ 1.  0.  0. -0.]   used 500 excluded 0
+
+demo 2  P = Pow_R(Pow_L(X1, 1), 1 + ½i)·X2  (two exponent layers)
+  reference MSE 7.182e-31  A = [ 0.8  -0.2   0.15  0.1 ]
+  total     MSE 9.893e-14  A = [ 0.8  -0.2   0.15  0.1 ]   used 700 excluded 0
+
+demo 3  search: start Pow_L(X, 1) → teacher Pow_R(X, 1 + ½i)
+  reference: 1 accepted moves, final MSE 1.270e-28, 0.2s
+     (0, 0, 0): W=('1', '1/2', '0', '0') R
+  total:     1 accepted moves, final MSE 9.081e-15, 6.2s
+     (0, 0, 0): W=('1', '1/2', '0', '0') R
+  teacher:   (0, 0, 0): W=('1', '1/2', '0', '0') R
+
+demo 4  the same search with 3 boundary rows appended (NaN, 1e40, ε)
+  reference: 5 accepted moves, final MSE nan, 0.4s
+     (0, 0, 0): W=('1', '0', '0', '1') L   A = [nan nan nan nan]
+  total:     1 accepted moves, final MSE 9.081e-15 on 1200 usable rows (3 excluded), 6.9s
+     (0, 0, 0): W=('1', '1/2', '0', '0') R   A = [ 0.7  -0.1   0.2   0.05]
+  the excluded rows come back flagged, never NaN:
+    row 1200: Z = [+4.559e-02 +3.192e-01 +2.280e-02 -9.119e-02]  flags [7, 7, 7, 7]  finite=True
+    row 1201: Z = [+8.467e+37 +1.387e+38 +2.871e+37 -3.767e+37]  flags [7, 7, 7, 7]  finite=True
+    row 1202: Z = [+1.175e-38 +1.175e-38 +1.175e-38 -1.175e-38]  flags [7, 7, 7, 7]  finite=True
+  teacher:   (0, 0, 0): W=('1', '1/2', '0', '0') R
+
+demo 4b  the same search with 2 boundary rows appended (1e40, ε)
+  reference: 3 accepted moves, final MSE 5.540e-01, 0.3s
+     (0, 0, 0): W=('0', '1', '-1/2', '0') L   A = [-0.1058 -0.8134  0.487   0.2985]
+     its MSE on the 1200 clean rows: 5.546e-01   (the clipped feature of the 1e40 row, unmarked: [-0.434  0.124 -0.062  0.001])
+  total:     1 accepted moves, final MSE 9.081e-15 on 1200 usable rows (2 excluded), 7.4s
+     (0, 0, 0): W=('1', '1/2', '0', '0') R   A = [ 0.7  -0.1   0.2   0.05]
+  the excluded rows come back flagged, never NaN:
+    row 1200: Z = [+8.467e+37 +1.387e+38 +2.871e+37 -3.767e+37]  flags [7, 7, 7, 7]  finite=True
+    row 1201: Z = [+1.175e-38 +1.175e-38 +1.175e-38 -1.175e-38]  flags [7, 7, 7, 7]  finite=True
+  teacher:   (0, 0, 0): W=('1', '1/2', '0', '0') R

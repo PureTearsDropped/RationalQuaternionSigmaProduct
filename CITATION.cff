@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below (record the commit ID and the total-arith-cuda version)."
+type: software
+title: "RationalQuaternionSigmaProduct: a rational-quaternion Σ-Product network on total arithmetic"
+authors:
+  - name: "PureTearsDropped"
+license: 0BSD
+repository-code: "https://github.com/PureTearsDropped/RationalQuaternionSigmaProduct"
+abstract: "A Σ-Product network over the quaternions: inputs X or X⁻¹, exponent layers stacked in depth with exponents W ∈ ℍ_ℚ generated from natural-number prime valuations and applied on the left (Exp(W·Log H)) or the right (Exp((Log H)·W)), ordered Hamilton products, a fixed right basis and a quaternion-linear Σ readout solved by least squares, with the structure found by a gradient sensor and an exact discrete search. The reference implementation (NumPy/IEEE) defines the structure; the same network is implemented on the total arithmetic of total-arith-cuda — the Hamilton product as a wiring product, the reserved-word logarithm Log₀(0) = 0, ε as a tagged boundary value, saturation flags instead of clamps, and a least-squares readout over the samples the arithmetic can vouch for. A parity check over random structures shows the two agree on every unflagged entry once the reference's unmarked guards are removed; on contaminated data the reference is steered by one silently clipped row while the total network excludes it and recovers the teacher."
+version: "v1.0.0"
+date-released: "2026-09-06"
+keywords:
+  - "quaternion neural network"
+  - "product unit"
+  - "sigma-pi network"
+  - "total arithmetic"
+  - "symbolic regression"
+  - "structure search"
+  - "reproducibility"

@@ -1,0 +1,223 @@
+Flexible Rational-Quaternion Sigma-Product Network
+1. 目的
+固定された4チャネルだけではなく、
+	●	入力本数
+	●	Product Unit数
+	●	各Product Unitに入れる入力
+	●	因子数
+	●	因子の順序
+	●	(X) / (X^{-1})
+	●	各因子の指数層数
+	●	各指数層の Left / Right
+	●	自然数から生成する有理Quaternion指数
+	●	最終右基底 (1,i,j,k)
+を自由に変更できる汎用Sigma-Product構造にする。
+￼
+2. 全体構造
+入力を
+[ X_1,\ldots,X_J\in\mathbb H ]
+とする。
+Product Unit (n) はordered product
+[ \boxed{ P_n= F_{n1}F_{n2}\cdots F_{nK_n} } ]
+である。
+Quaternionでは
+[ F_1F_2\neq F_2F_1 ]
+なので、因子順序も構造そのものになる。
+最後は
+[ \boxed{ Z= \sum_{n=1}^{N_P} A_nP_ne_{r_n} } ]
+とする。
+[ A_n\in\mathbb H ]
+は連続readout係数であり、構造固定時にはleast squaresで求められる。
+￼
+3. Factor
+各factorは、まず入力を1本選ぶ。
+[ H_0=X_j ]
+またはreciprocalを選べば
+[ H_0=X_j^{-1}. ]
+その後、指数層を0層以上自由に積める。
+Left exponent layer
+[ \boxed{ H_{\ell+1}
+\Exp(W_\ell\Log H_\ell) } ]
+Right exponent layer
+[ \boxed{ H_{\ell+1}
+\Exp((\Log H_\ell)W_\ell) } ]
+したがって指数層0なら単なる
+[ F=X_j ]
+または
+[ F=X_j^{-1}. ]
+指数層3なら
+[ X \rightarrow \operatorname{Pow}{s_1}(\cdot,W_1) \rightarrow \operatorname{Pow}{s_2}(\cdot,W_2) \rightarrow \operatorname{Pow}_{s_3}(\cdot,W_3) ]
+となる。
+￼
+4. (X_1X_2) の厳密表現
+Product Unitを
+[ P=F_1F_2 ]
+として、
+[ F_1=X_1,\qquad F_2=X_2 ]
+にするだけで
+[ \boxed{ P=X_1X_2 } ]
+を厳密に表現できる。
+コードでは指数層を空リストにすればよい。
+```python ProductUnit(     factors=[         make_passthrough_factor(0),         make_passthrough_factor(1),     ] ) ```
+順序を逆にすれば
+[ X_2X_1 ]
+という別のQuaternion特徴になる。
+￼
+5. 多入力 + 指数
+例えば
+[ \boxed{ P= \operatorname{Pow}_R \left( X_1, 1+\frac12i \right) X_2^{-1} } ]
+も1つのProduct Unitとして書ける。
+さらに
+[ \boxed{ P= \operatorname{Pow}_R \left( \operatorname{Pow}_L(X_1,W_1), W_2 \right) X_2 X_3^{-1} } ]
+のように指数depthもfactor数も自由である。
+￼
+6. 自然数から有理Quaternion指数
+各Quaternion成分 (\mu\in{0,1,2,3}) に対して
+[ R_{\mu,+}
+\prod_p p^{n_{\mu,+,\mathrm{num},p}
+n_{\mu,+,\mathrm{den},p}}, ]
+[ R_{\mu,-}
+\prod_p p^{n_{\mu,-,\mathrm{num},p}
+n_{\mu,-,\mathrm{den},p}}, ]
+とする。
+すべての内部stateは
+[ n\in\mathbb N. ]
+実効成分は
+[ \boxed{ w_\mu=R_{\mu,+}-R_{\mu,-} } ]
+なので、
+[ \boxed{ W=w_0+w_1i+w_2j+w_3k \in\mathbb H_{\mathbb Q}. } ]
+内部自然数だけで
+[ 1+\frac12i,\quad -\frac12+j,\quad \frac34-\frac23i+\frac15k ]
+などを生成できる。
+￼
+7. 0初期化
+全自然数stateを同一にすると
+[ R_{\mu,+}=R_{\mu,-}=1 ]
+なので
+[ \boxed{W=0}. ]
+以前のCSPUと同様に、
+[ \boxed{ \text{positive channel}
+\text{negative channel} \Rightarrow \text{effective exponent}=0 } ]
+という意味論を保てる。
+￼
+8. 交互 (X/X^{-1}) linear-preserving seed
+1入力4unitの場合、
+[ X,\quad X^{-1},\quad X,\quad X^{-1} ]
+をbaseとして交互に置く。
+指数は
+[ +1,\quad-1,\quad+1,\quad-1 ]
+で初期化する。
+すると
+[ X^{+1}=X ]
+かつ
+[ (X^{-1})^{-1}=X ]
+なので、
+右基底
+[ 1,i,j,k ]
+を付ければ初期特徴は
+[ \boxed{ X,\ Xi,\ Xj,\ Xk. } ]
+したがって
+[ \boxed{ Z=A_0X+A_1Xi+A_2Xj+A_3Xk } ]
+となり、任意のreal (4\times4) linear mapを包含する。
+コード:
+```python net = make_alternating_linear_seed(     n_units=4,     primes=(2,3,5,7), ) ```
+￼
+9. 自由な構造例
+例A: (X_1X_2)
+```python net = SigmaProductNetwork(     primes=(2,3,5,7),     units=[         ProductUnit(             factors=[                 make_passthrough_factor(0),                 make_passthrough_factor(1),             ]         )     ] ) ```
+例B: (X_1^{-1}X_2X_3^{-1})
+```python ProductUnit(     factors=[         make_passthrough_factor(0, reciprocal=True),         make_passthrough_factor(1),         make_passthrough_factor(2, reciprocal=True),     ] ) ```
+例C: 1入力に指数を2層
+```python Factor(     input_index=0,     reciprocal=False,     exponent_layers=[         ExponentLayer(W1, "L"),         ExponentLayer(W2, "R"),     ] ) ```
+数式では
+[ \boxed{ F= \operatorname{Pow}_R( \operatorname{Pow}_L(X,W_1), W_2 ). } ]
+例D: 多入力 + 深い指数
+[ \boxed{ P= \operatorname{Pow}_R( \operatorname{Pow}_L(X_1,W_1), W_2 ) , \operatorname{Pow}_L(X_2^{-1},W_3) , X_3. } ]
+これも同じdataclass構成で表せる。
+￼
+10. grouped / QFT対応
+入力形状
+[ [N,I,4] ]
+なら通常の多入力データ。
+[ [N,G,I,4] ]
+なら、(G) をQFT binなどのgroupとして扱う。
+離散構造は全groupで共有しつつ、
+[ A_n ]
+はgroupごとに独立least squares fitできる。
+したがってQFTでは
+[ \boxed{ \text{shared rational-Quaternion structure} + \text{per-bin quaternion readout} } ]
+として使える。
+￼
+11. Gradient sensor + exact discrete search
+探索ではgradientを直接updateに使わない。
+まず現在の離散構造で
+[ A ]
+をexact LS fitする。
+その後、(A) を固定して各chunkで
+[ \frac{\partial L_b}{\partial W_{\ell,\mu}} ]
+を求める。
+chunk consensus:
+[ \boxed{ C_{\ell,\mu}
+\frac{ \left|\sum_b g_{b,\ell,\mu}\right| }{ \sum_b|g_{b,\ell,\mu}|+\varepsilon } } ]
+RMS:
+[ R_{\ell,\mu}
+\sqrt{ \frac1B \sum_b g_{b,\ell,\mu}^2 }. ]
+sensor score:
+[ \boxed{ S_{\ell,\mu}
+C_{\ell,\mu}R_{\ell,\mu}. } ]
+gradientが選ぶのは
+[ \boxed{ (\text{exponent layer},\text{Quaternion component}) } ]
+まで。
+prime座標そのものはgradientで決めない。
+￼
+12. Natural exact moves
+選ばれたQuaternion成分内で、
+[ n\rightarrow n+1 ]
+および合法なら
+[ n\rightarrow n-1 ]
+を全て列挙する。
+候補ごとに
+	1.	自然数stateを変更
+	2.	(W\in\mathbb H_{\mathbb Q}) をexact再構成
+	3.	network featureを再計算
+	4.	(A) をleast squaresで再fit
+	5.	真のtraining lossを評価
+する。
+したがって
+[ \boxed{ \text{gradient = sensor} } ]
+[ \boxed{ \text{exact discrete evaluation = decision} } ]
+である。
+￼
+13. L/R barrier
+Quaternion exponentでは、正しい構造が
+[ W\text{変更} + L\leftrightarrow R ]
+を同時に必要とする場合がある。
+自然数moveだけでは一時的にlossが悪化し、その次のL/R flipへ到達できないことがある。
+そのためコードでは
+[ \boxed{ \text{Natural move + L/R flip} } ]
+を1つのcompound candidateとしてexact評価する。
+￼
+14. 今回の汎用化で可能になったもの
+以前の固定
+[ Y_m= \operatorname{Pow}_{s_m}(X^{\sigma_m},W_m)e_m ]
+は、この汎用networkの特殊ケースになった。
+さらに、
+[ X_1X_2, ]
+[ X_1X_2X_3, ]
+[ X_1^{-1}X_2, ]
+[ X_1X_2^{-1}, ]
+[ \operatorname{Pow}_L(X_1,W_1) \operatorname{Pow}_R(X_2,W_2), ]
+[ \operatorname{Pow}_R( \operatorname{Pow}_L(X_1,W_1), W_2 ) X_2 ]
+などを同じコードで構成できる。
+￼
+15. 推奨する考え方
+構造は3階層に分離する。
+Input / topology
+[ \boxed{ \text{どの }X_j\text{ を、どの順番で、正/逆のどちらで使うか} } ]
+Exponent geometry
+[ \boxed{ W\in\mathbb H_{\mathbb Q}, \qquad L/R, \qquad \text{depth} } ]
+Sigma readout
+[ \boxed{ Z=\sum_nA_nP_n } ]
+この分離により、
+[ \boxed{ \text{既知の積構造} + \text{必要な場所だけ有理Quaternion非線形} + \text{最後だけ線形readout} } ]
+という設計が可能になる。

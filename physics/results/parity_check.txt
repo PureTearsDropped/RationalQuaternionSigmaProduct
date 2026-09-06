@@ -1,0 +1,9 @@
+60 random structures; "disagree" = relative difference > 1e-3 on an entry the total arithmetic left unflagged
+counts ≤1 (max |W component|    210)  guards on   Tot values f64: unflagged  40226  disagree  591  worst rel 2.6e+31
+counts ≤1 (max |W component|    210)  guards on   Tot values f32: unflagged  40226  disagree  678  worst rel 2.6e+31
+counts ≤1 (max |W component|    210)  guards off  Tot values f64: unflagged  40226  disagree    0  worst rel 1.9e-09
+counts ≤1 (max |W component|    210)  guards off  Tot values f32: unflagged  40226  disagree  105  worst rel 2.4e-01
+counts ≤2 (max |W component|  22041)  guards on   Tot values f64: unflagged  20934  disagree  582  worst rel 2.2e+36
+counts ≤2 (max |W component|  22041)  guards on   Tot values f32: unflagged  20934  disagree  787  worst rel 2.2e+36
+counts ≤2 (max |W component|  22041)  guards off  Tot values f64: unflagged  20934  disagree    0  worst rel 6.1e-10
+counts ≤2 (max |W component|  22041)  guards off  Tot values f32: unflagged  20934  disagree  301  worst rel 1.5e-01
