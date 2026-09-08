@@ -1,0 +1,41 @@
+
+Approximating a function that is NOT on the lattice, with every coefficient on the lattice (A ≡ 1).
+
+Seed: log-Fourier modes X^{±ik}, k = 1..K (and a constant unit X⁰), each unit led by the coefficient factor e^{W}.
+Targets (inputs real, x = (x, 0, 0, 0); the constant node e is the last input):
+    T1  f(x)     = 1/(1 + 4(log x − 1)²)                on x ∈ [1, e²]           (not a power law, not periodic)
+    T2  f(x)     = sin(3x)/x                            on x ∈ [1, e²]
+    T3  f(x₁,x₂) = log(x₁ + x₂)                         on [1, 3]²               (the sum sits outside one layer)
+Modes:
+    A   LS readout (the reference), exponents refined by ±1 count moves          — the continuous ceiling
+    D0  A's exponents, Log A snapped to the nearest ledger of bound m, A ≡ 1     — the snap alone
+    D   D0 then ledger moves on every channel (exponents and coefficients)        — LS proposes, the lattice decides
+Reported: relative test MSE  = MSE / Var(f), on 2000 held-out samples.        python physics/lattice_approximation.py
+
+== bound m sweep (the coefficient set and the frequency set both grow with m)
+  T1 1/(1+4(log x−1)²)     K=2 U= 5 m= 2 | A  train 3.85e-03 test 3.91e-03 (3 steps,    1s) | D0 test 1.43e+01 | D train 5.93e-01 test 5.66e-01 (2 steps, 127 evals,    1s)
+  T1 1/(1+4(log x−1)²)     K=2 U= 5 m= 4 | A  train 1.77e-03 test 1.81e-03 (8 steps,    1s) | D0 test 3.01e-02 | D train 1.34e-02 test 1.33e-02 (3 steps, 590 evals,    2s)
+  T1 1/(1+4(log x−1)²)     K=2 U= 5 m= 6 | A  train 7.77e-04 test 7.70e-04 (8 steps,    1s) | D0 test 1.14e-02 | D train 1.17e-02 test 1.14e-02 (0 steps, 302 evals,    1s)
+  T1 1/(1+4(log x−1)²)     K=2 U= 5 m= 8 | A  train 7.77e-04 test 7.70e-04 (8 steps,    1s) | D0 test 2.80e-02 | D train 1.94e-03 test 1.94e-03 (2 steps, 1756 evals,    6s)
+      [Exp((−5/2 − 4/3i)·Log e)·Exp((−5i)·Log X0)]  +  [Exp((−3/8 + 8/7i)·Log e)·Exp((−i)·Log X0)]  +  [Exp((−1/2 − 20/7i)·Log e)·Exp((0)·Log X0)]  +  [Exp((−1/3 − 6/7i)·Log e)·Exp((i)·Log X0)]  +  [Exp((−2 + 6/5i)·Log e)·Exp((−1/2 + 5i)·Log X0)]
+  T1 1/(1+4(log x−1)²)     K=2 U= 5 m=12 | A  train 7.77e-04 test 7.70e-04 (8 steps,    1s) | D0 test 7.38e-03 | D train 1.01e-03 test 9.98e-04 (3 steps, 5016 evals,   16s)
+  T2 sin(3x)/x             K=3 U= 7 m= 3 | A  train 8.69e-02 test 8.84e-02 (8 steps,    2s) | D0 test 4.14e+04 | D train 2.67e+03 test 2.70e+03 (1 steps, 177 evals,    1s)
+  T2 sin(3x)/x             K=3 U= 7 m= 4 | A  train 8.55e-02 test 8.67e-02 (8 steps,    2s) | D0 test 1.54e+03 | D train 8.93e+02 test 8.94e+02 (3 steps, 603 evals,    3s)
+  T2 sin(3x)/x             K=3 U= 7 m= 6 | A  train 7.55e-02 test 7.73e-02 (8 steps,    2s) | D0 test 8.80e-01 | D train 8.71e-01 test 8.80e-01 (0 steps, 290 evals,    1s)
+  T2 sin(3x)/x             K=3 U= 7 m= 8 | A  train 6.20e-02 test 6.42e-02 (8 steps,    2s) | D0 test 2.08e+01 | D train 5.15e-01 test 5.10e-01 (3 steps, 2235 evals,   10s)
+      [Exp((−2 − 5/3i)·Log e)·Exp((−6i)·Log X0)]  +  [Exp((1 + 5/2i)·Log e)·Exp((−11/6i)·Log X0)]  +  [Exp((2 − 8/5i)·Log e)·Exp((−i)·Log X0)]  +  [Exp((23/10 + 3/7i)·Log e)·Exp((0)·Log X0)]  +  [Exp((2 + 5/2i)·Log e)·Exp((i)·Log X0)]  +  [Exp((7/8 − 5/3i)·Log e)·Exp((2i)·Log X0)]  +  [Exp((−7/3 − 1/2i)·Log e)·Exp((8i)·Log X0)]
+  T2 sin(3x)/x             K=3 U= 7 m=12 | A  train 5.86e-02 test 5.84e-02 (8 steps,    2s) | D0 test 4.22e+01 | D train 4.52e+00 test 4.32e+00 (2 steps, 3709 evals,   17s)
+  T3 log(x₁+x₂)            K=1 U= 9 m= 1 | A  train 4.57e-05 test 4.49e-05 (0 steps,    0s) | D0 test 7.62e+01 | D train 1.07e+01 test 1.03e+01 (2 steps, 46 evals,    1s)
+  T3 log(x₁+x₂)            K=1 U= 9 m= 4 | A  train 1.12e-06 test 1.01e-06 (6 steps,    3s) | D0 test 5.13e-01 | D train 1.66e-01 test 1.63e-01 (2 steps, 480 evals,    4s)
+  T3 log(x₁+x₂)            K=1 U= 9 m= 6 | A  train 1.12e-06 test 1.01e-06 (6 steps,    3s) | D0 test 1.38e+00 | D train 4.43e-02 test 4.33e-02 (2 steps, 937 evals,    8s)
+  T3 log(x₁+x₂)            K=1 U= 9 m= 8 | A  train 1.12e-06 test 1.01e-06 (6 steps,    3s) | D0 test 4.17e-01 | D train 5.96e-03 test 5.59e-03 (3 steps, 2488 evals,   20s)
+      [Exp((−7/2 − 1/4i)·Log e)·Exp((−i)·Log X0)·Exp((−i)·Log X1)]  +  [Exp((33/56 + 8i)·Log e)·Exp((−1/4i)·Log X0)·Exp((0)·Log X1)]  +  [Exp((−2 − 3i)·Log e)·Exp((−i)·Log X0)·Exp((i)·Log X1)]  +  [Exp((5/7 + 8i)·Log e)·Exp((0)·Log X0)·Exp((−1/4i)·Log X1)]  +  [Exp((7/5 − 7/6i)·Log e)·Exp((0)·Log X0)·Exp((0)·Log X1)]  +  [Exp((−4 + 8/3i)·Log e)·Exp((0)·Log X0)·Exp((i)·Log X1)]  +  [Exp((−2 − 3i)·Log e)·
+  T3 log(x₁+x₂)            K=1 U= 9 m=12 | A  train 1.12e-06 test 1.01e-06 (6 steps,    3s) | D0 test 5.58e-02 | D train 1.70e-03 test 1.63e-03 (2 steps, 3893 evals,   31s)
+
+== unit sweep at m = 8 (more modes: the lattice keeps up with the continuous readout or not)
+  T1 1/(1+4(log x−1)²)     K=1 U= 3 m= 8 | A  train 2.08e-02 test 2.02e-02 (3 steps,    0s) | D0 test 2.70e-02 | D train 2.18e-02 test 2.11e-02 (8 steps, 4784 evals,    8s)
+  T1 1/(1+4(log x−1)²)     K=2 U= 5 m= 8 | A  train 7.77e-04 test 7.70e-04 (8 steps,    1s) | D0 test 2.80e-02 | D train 1.94e-03 test 1.94e-03 (2 steps, 1756 evals,    5s)
+  T1 1/(1+4(log x−1)²)     K=3 U= 7 m= 8 | A  train 1.90e-04 test 1.84e-04 (8 steps,    2s) | D0 test 6.36e-02 | D train 3.37e-03 test 3.36e-03 (2 steps, 1800 evals,    7s)
+  T1 1/(1+4(log x−1)²)     K=4 U= 9 m= 8 | A  train 3.02e-05 test 2.93e-05 (8 steps,    3s) | D0 test 1.88e+01 | D train 1.94e-01 test 1.91e-01 (8 steps, 4451 evals,   27s)
+  T3 log(x₁+x₂)            K=1 U= 9 m= 8 | A  train 1.12e-06 test 1.01e-06 (6 steps,    3s) | D0 test 4.17e-01 | D train 5.96e-03 test 5.59e-03 (3 steps, 2488 evals,   20s)
+  T3 log(x₁+x₂)            K=2 U=25 m= 8 | A  train 1.28e-10 test 1.30e-10 (2 steps,    6s) | D0 test 6.94e-02 | D train 6.85e-03 test 6.88e-03 (3 steps, 2462 evals,   69s)

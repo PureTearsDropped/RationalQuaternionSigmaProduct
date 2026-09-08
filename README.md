@@ -119,6 +119,28 @@ evaluation after the snap verifies it (here MSE exactly 0: the found network *is
 The empty ledger 0/0 is a plateau for ±1 count moves (every single step leaves the exponent 0), so a neutral seed is
 the balanced ledger 1/1 − 1/1; ledger moves have no plateau.
 
+**Off the lattice** (`physics/lattice_approximation.py`, `physics/lattice_ridge.py`; results in `physics/results/`):
+targets that are not on any lattice — 1/(1+4(log x−1)²) on [1, e²], sin(3x)/x, log(x₁+x₂) on [1, 3]² — from a
+log-Fourier seed X^{±ik}, k ≤ K, 2000 train / 2000 test samples, relative test MSE = MSE/Var(f):
+
+| target | K (units) | m | A: LS readout | A with ridge 1 | D0: snap of the ridge-1 proposal | D: + ledger moves, A ≡ 1 |
+|---|---|---|---|---|---|---|
+| 1/(1+4(log x−1)²) | 4 (9) | 8 | 2.9e-5 (max\|A\| 8.7) | 7.0e-5 (max\|A\| 0.19) | 6.1e-3 | **8.6e-4** |
+| same | 4 (9) | 12 | 2.9e-5 | 7.0e-5 | 5.6e-3 | **6.7e-4** (ridge 10: 3.4e-4) |
+| log(x₁+x₂) | 2 (25) | 8 | 1.3e-10 (max\|A\| 2.2) | 5.2e-6 (max\|A\| 0.22) | 6.7e-3 | **2.0e-4** |
+| same | 2 (25) | 12 | 1.3e-10 | 5.2e-6 | 2.4e-3 | **1.4e-4** |
+| sin(3x)/x | 3 (7) | 8 | 6.4e-2 | 8.4e-2 | 8.9e-2 | 8.6e-2 (the seed's modes are the limit, not the lattice) |
+
+Two things decide it.  **The proposal must not cancel**: the plain least-squares readout puts large coefficients
+against each other (max|A| 8.7 for a target of size 1; 11.8 for sin(3x)/x), and rounding each to the lattice breaks
+the cancellation — the snapped network is worse than the constant (relative MSE 19, 21).  A ridge that keeps |A| = O(1)
+costs the continuous readout ×2–×40 and gives the lattice a proposal it can hold.  **The lattice has a floor**: the
+Farey half-gap of n/o at bound m (0.062 nats at m = 8, 0.042 at m = 12) is the worst rounding of log|A| and of an
+angle; the snap alone lands at a few 1e-3, the ledger moves after it reach 1e-4–1e-3, one to one-and-a-half orders
+behind the ridge readout and three to five behind the unregularised one.  The lattice cannot use cancellation, which
+is the same fact as "only a sparse rational solution is evidence": a fit that needs cancelling coefficients is not
+on any lattice.
+
 ## The demos
 
 `physics/demos.py` → `physics/results/demos.txt` (CPU, ~40 s):
@@ -143,6 +165,8 @@ cd RationalQuaternionSigmaProduct && pip install -r requirements.txt
 python test_rational_quaternion_sigma_product.py    # reserved words, Hamilton table, agreement with the reference, the boundary
 python test_bounded_exponent.py                      # x^(n/o), 0 ≤ n, o ≤ m: ledger, unroll, bounded search (reference and Tot)
 python physics/lattice_coefficients.py               # coefficients on the lattice via a constant input node, 5 search modes
+python physics/lattice_approximation.py              # off-lattice targets: bound m and unit sweeps (~4 min)
+python physics/lattice_ridge.py                      # ridge on the proposal before the snap, the Farey floor (~15 min)
 python physics/demos.py                              # the four demos, reference vs total
 python physics/parity_check.py                       # 60 random structures, guards on/off, float32/float64 (~5 min)
 python flexible_rational_quaternion_sigma_product.py # the reference's own demos (NumPy + PyTorch)

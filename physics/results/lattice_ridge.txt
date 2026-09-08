@@ -1,0 +1,41 @@
+
+Why the snap fails: the least-squares proposal cancels large coefficients, and a 1 % lattice rounding of each breaks
+the cancellation.  Ridge on the proposal keeps |A| = O(1); then the lattice's own floor (the Farey spacing of n/o at
+bound m, ~1/m² in log|A|) should show.   python physics/lattice_ridge.py
+
+Farey half-gap of the ledger at bound m (worst rounding of log|A|, in nats):  m=4: 0.125  m=8: 0.062  m=12: 0.042  m=16: 0.031
+(the normal matrix has entries ~N = 2000, so ridge 1 is a relative 5e-4)
+  T1 1/(1+4(log x−1)²)   K=2 m= 8 ridge= 1e-10 | A test 7.70e-04 max|A|     0.70 | D0 2.80e-02 | D 1.94e-03 (2 steps)
+  T1 1/(1+4(log x−1)²)   K=2 m= 8 ridge= 1e+00 | A test 1.43e-03 max|A|     0.52 | D0 1.58e-02 | D 3.04e-03 (5 steps)
+  T1 1/(1+4(log x−1)²)   K=2 m= 8 ridge= 1e+01 | A test 2.13e-03 max|A|     0.35 | D0 6.46e-03 | D 6.09e-03 (1 steps)
+  T1 1/(1+4(log x−1)²)   K=2 m= 8 ridge= 1e+02 | A test 3.10e-03 max|A|     0.26 | D0 4.28e-03 | D 2.47e-03 (1 steps)
+
+  T1 1/(1+4(log x−1)²)   K=4 m= 8 ridge= 1e-10 | A test 2.93e-05 max|A|     8.72 | D0 1.88e+01 | D 1.91e-01 (8 steps)
+  T1 1/(1+4(log x−1)²)   K=4 m= 8 ridge= 1e+00 | A test 7.04e-05 max|A|     0.19 | D0 6.05e-03 | D 8.59e-04 (8 steps)
+  T1 1/(1+4(log x−1)²)   K=4 m= 8 ridge= 1e+01 | A test 2.21e-04 max|A|     0.17 | D0 5.34e-03 | D 4.73e-04 (2 steps)
+  T1 1/(1+4(log x−1)²)   K=4 m= 8 ridge= 1e+02 | A test 1.03e-03 max|A|     0.12 | D0 9.22e-03 | D 9.83e-04 (8 steps)
+
+  T1 1/(1+4(log x−1)²)   K=4 m=12 ridge= 1e-10 | A test 2.93e-05 max|A|     8.72 | D0 1.20e+00 | D 1.79e-01 (4 steps)
+  T1 1/(1+4(log x−1)²)   K=4 m=12 ridge= 1e+00 | A test 7.04e-05 max|A|     0.19 | D0 5.55e-03 | D 6.73e-04 (4 steps)
+  T1 1/(1+4(log x−1)²)   K=4 m=12 ridge= 1e+01 | A test 2.21e-04 max|A|     0.17 | D0 1.55e-03 | D 3.38e-04 (3 steps)
+  T1 1/(1+4(log x−1)²)   K=4 m=12 ridge= 1e+02 | A test 1.03e-03 max|A|     0.12 | D0 4.16e-03 | D 9.20e-04 (3 steps)
+
+  T2 sin(3x)/x           K=3 m= 8 ridge= 1e-10 | A test 6.42e-02 max|A|    11.78 | D0 2.08e+01 | D 5.10e-01 (3 steps)
+  T2 sin(3x)/x           K=3 m= 8 ridge= 1e+00 | A test 8.44e-02 max|A|     0.85 | D0 8.85e-02 | D 8.60e-02 (1 steps)
+  T2 sin(3x)/x           K=3 m= 8 ridge= 1e+01 | A test 8.32e-02 max|A|     0.32 | D0 2.30e-01 | D 8.29e-02 (8 steps)
+  T2 sin(3x)/x           K=3 m= 8 ridge= 1e+02 | A test 9.35e-02 max|A|     0.23 | D0 1.75e-01 | D 8.41e-02 (8 steps)
+
+  T3 log(x₁+x₂)          K=1 m= 8 ridge= 1e-10 | A test 1.01e-06 max|A|     4.23 | D0 4.17e-01 | D 5.59e-03 (3 steps)
+  T3 log(x₁+x₂)          K=1 m= 8 ridge= 1e+00 | A test 3.19e-05 max|A|     0.51 | D0 4.53e-03 | D 3.86e-04 (5 steps)
+  T3 log(x₁+x₂)          K=1 m= 8 ridge= 1e+01 | A test 1.91e-04 max|A|     0.26 | D0 8.82e-03 | D 9.74e-04 (2 steps)
+  T3 log(x₁+x₂)          K=1 m= 8 ridge= 1e+02 | A test 7.75e-04 max|A|     0.25 | D0 3.37e-03 | D 1.28e-03 (3 steps)
+
+  T3 log(x₁+x₂)          K=2 m= 8 ridge= 1e-10 | A test 1.30e-10 max|A|     2.17 | D0 6.94e-02 | D 6.88e-03 (3 steps)
+  T3 log(x₁+x₂)          K=2 m= 8 ridge= 1e+00 | A test 5.21e-06 max|A|     0.22 | D0 6.67e-03 | D 1.97e-04 (4 steps)
+  T3 log(x₁+x₂)          K=2 m= 8 ridge= 1e+01 | A test 5.50e-05 max|A|     0.21 | D0 4.69e-03 | D 6.89e-04 (1 steps)
+  T3 log(x₁+x₂)          K=2 m= 8 ridge= 1e+02 | A test 1.40e-03 max|A|     0.12 | D0 1.65e-01 | D 2.81e-03 (4 steps)
+
+  T3 log(x₁+x₂)          K=2 m=12 ridge= 1e-10 | A test 1.30e-10 max|A|     2.17 | D0 3.26e-02 | D 9.74e-04 (2 steps)
+  T3 log(x₁+x₂)          K=2 m=12 ridge= 1e+00 | A test 5.21e-06 max|A|     0.22 | D0 2.43e-03 | D 1.37e-04 (6 steps)
+  T3 log(x₁+x₂)          K=2 m=12 ridge= 1e+01 | A test 5.50e-05 max|A|     0.21 | D0 1.65e-03 | D 4.14e-04 (1 steps)
+  T3 log(x₁+x₂)          K=2 m=12 ridge= 1e+02 | A test 1.40e-03 max|A|     0.12 | D0 1.67e-02 | D 3.49e-03 (2 steps)
