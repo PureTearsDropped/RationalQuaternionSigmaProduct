@@ -1,0 +1,12 @@
+Discrete first, float after: the structure D found with every coefficient on the lattice, coefficients re-solved in float
+(9 of 10 rows; the last, T3 K=2 m=12 proposal ridge 1, exceeded the 580 s run limit).  relative test MSE, 2000/2000 samples.
+
+  T1 1/(1+4(log x−1)²)   K=2 m= 8 proposal ridge 1e-10 | A structure: LS 7.70e-04 ridge1 8.13e-04 | D lattice 1.94e-03 → D structure refit: LS 7.70e-04 (max|A|   0.70) ridge1 8.13e-04 | structures identical
+  T1 1/(1+4(log x−1)²)   K=2 m= 8 proposal ridge 1e+00 | A structure: LS 1.41e-03 ridge1 1.43e-03 | D lattice 3.04e-03 → D structure refit: LS 1.40e-03 (max|A|   0.53) ridge1 1.42e-03 | structures differ
+  T1 1/(1+4(log x−1)²)   K=4 m= 8 proposal ridge 1e-10 | A structure: LS 2.93e-05 ridge1 2.52e-04 | D lattice 1.91e-01 → D structure refit: LS 2.93e-05 (max|A|   8.53) ridge1 2.62e-04 | structures differ
+  T1 1/(1+4(log x−1)²)   K=4 m= 8 proposal ridge 1e+00 | A structure: LS 4.25e-05 ridge1 7.04e-05 | D lattice 8.59e-04 → D structure refit: LS 4.26e-05 (max|A|   4.45) ridge1 6.93e-05 | structures differ
+  T1 1/(1+4(log x−1)²)   K=4 m=12 proposal ridge 1e-10 | A structure: LS 2.93e-05 ridge1 2.52e-04 | D lattice 1.79e-01 → D structure refit: LS 2.93e-05 (max|A|   8.72) ridge1 2.52e-04 | structures identical
+  T1 1/(1+4(log x−1)²)   K=4 m=12 proposal ridge 1e+00 | A structure: LS 4.25e-05 ridge1 7.04e-05 | D lattice 6.73e-04 → D structure refit: LS 4.25e-05 (max|A|   4.53) ridge1 7.25e-05 | structures differ
+  T3 log(x₁+x₂)          K=1 m= 8 proposal ridge 1e-10 | A structure: LS 1.01e-06 ridge1 3.31e-04 | D lattice 5.59e-03 → D structure refit: LS 1.01e-06 (max|A|   4.23) ridge1 3.31e-04 | structures identical
+  T3 log(x₁+x₂)          K=1 m= 8 proposal ridge 1e+00 | A structure: LS 3.70e-06 ridge1 3.19e-05 | D lattice 3.86e-04 → D structure refit: LS 3.69e-06 (max|A|   0.44) ridge1 3.55e-05 | structures differ
+  T3 log(x₁+x₂)          K=2 m=12 proposal ridge 1e-10 | A structure: LS 1.30e-10 ridge1 9.21e-05 | D lattice 9.74e-04 → D structure refit: LS 1.30e-10 (max|A|   2.17) ridge1 9.21e-05 | structures identical
