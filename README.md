@@ -67,6 +67,34 @@ guards on, every disagreeing entry is a chained exponent layer whose first outpu
 exponent passed 80 — where the reference clamps silently.  In float32 a further 0.3–1.4 % differ where |W| is in the
 hundreds: a phase W·Log X of hundreds of radians loses its 1e-7 to float32 rounding.  That is precision, not structure.
 
+## Bounded exponents: x^(n/o) with 0 ≤ n, o ≤ m
+
+`bounded_exponent.py` is the other natural-number ledger for an exponent.  The reference's counts are prime
+valuations (w = R₊ − R₋, R = ∏ p^(num−den): an unbounded lattice); here **the count is the numerator or the
+denominator itself**,
+
+    w_μ = n⁺_μ/o⁺_μ − n⁻_μ/o⁻_μ,        n, o ∈ {0, 1, …, m},        n/0 := 0,
+
+with the total-arithmetic reading of the division (a/0 = 0 is the Moore–Penrose inverse of 0, so the empty ledger
+0/0 is the exponent 0 and the factor 1).  m is the number of layers the exponent may use: a numerator n is n product
+slots of the input, a denominator o is one o-th root, and `unroll(network)` spells a factor out that way —
+X^(3/2) becomes three slots of X^(1/2), X^(2/3 − 1/2) becomes two slots of X^(1/3) and one of X^(−1/2) — with the
+two evaluations agreeing to 1e-12.  The default bound is the number of input nodes; it is a free parameter because
+**one input node with m = 1 holds only the exponents 0 and ±1**, so a one-input network chooses its own m.
+
+The state has the reference's duck-type, so the evaluation, the gradient sensor, the ±1 move generator and both search
+loops run on it unchanged; the network's prime tuple is `UNARY = (1,)` (one digit, the count itself) and
+`apply_move`/`propose_moves` refuse a count above the bound.  `to_natural(primes)` writes any ledger as a
+prime-valuation state (exact, bit-identical features: the bounded lattice is a finite subset of the reference's
+lattice; every n/o with n, o ≤ m factors over the primes ≤ m).  `test_bounded_exponent.py`: the ledger semantics,
+the bound as a free parameter, the moves confined to [0, m], bounded = prime state, the unroll, and the search
+from X₀·X₁ to the teacher X₀^{1/2}·X₁² in two ledger moves on the reference and on `Tot` (with a NaN row and an
+ε row in the data, excluded rather than fatal).
+
+The exponent set at bound m is finite: m = 2 gives {0, ½, 1, 2} per channel, m = 3 gives {0, ⅓, ½, ⅔, 1, 3/2, 2, 3},
+and the channel difference doubles it around 0.  The count in [0, m] is what the search moves ±1; the fraction is what
+the layer evaluates.
+
 ## The demos
 
 `physics/demos.py` → `physics/results/demos.txt` (CPU, ~40 s):
@@ -89,6 +117,7 @@ git clone https://github.com/PureTearsDropped/total-arith-cuda          # ≥ v1
 git clone https://github.com/PureTearsDropped/RationalQuaternionSigmaProduct
 cd RationalQuaternionSigmaProduct && pip install -r requirements.txt
 python test_rational_quaternion_sigma_product.py    # reserved words, Hamilton table, agreement with the reference, the boundary
+python test_bounded_exponent.py                      # x^(n/o), 0 ≤ n, o ≤ m: ledger, unroll, bounded search (reference and Tot)
 python physics/demos.py                              # the four demos, reference vs total
 python physics/parity_check.py                       # 60 random structures, guards on/off, float32/float64 (~5 min)
 python flexible_rational_quaternion_sigma_product.py # the reference's own demos (NumPy + PyTorch)

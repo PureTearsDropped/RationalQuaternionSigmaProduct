@@ -769,6 +769,9 @@ def apply_move(network: SigmaProductNetwork, move):
         nxt = cur + move.delta
         if nxt < 0:
             raise ValueError("illegal negative natural state")
+        bound = getattr(layer.state, "bound", None)      # bounded ledger (bounded_exponent.py)
+        if bound is not None and nxt > bound:
+            raise ValueError(f"illegal natural state above the bound {bound}")
         layer.state.counts[
             move.component, move.sign, move.leg, move.prime_index
         ] = nxt
@@ -822,6 +825,8 @@ def propose_moves(
     for li,mu in blocks:
         key = layer_keys[li]
         layer = _get_layer(network, key)
+        bound = getattr(layer.state, "bound", None)      # bounded ledger: never propose above it
+        cap = max_count if bound is None else (bound if max_count is None else min(max_count, bound))
 
         for sign in range(2):
             for leg in range(2):
@@ -831,7 +836,7 @@ def propose_moves(
                         nxt = cur + delta
                         if nxt < 0:
                             continue
-                        if max_count is not None and nxt > max_count:
+                        if cap is not None and nxt > cap:
                             continue
                         nm = NaturalMove(key,mu,sign,leg,pi,delta)
                         proposals.append(nm)
