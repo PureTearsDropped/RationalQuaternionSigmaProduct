@@ -275,3 +275,70 @@ def unroll(network: ref.SigmaProductNetwork, primes: Sequence[int] | None = None
                                           factor.name))
         units.append(ref.ProductUnit(factors, unit.right_basis, unit.name))
     return ref.SigmaProductNetwork(primes=primes, units=units)
+
+
+# ---- ledger moves: the finite lattice makes "any ledger of one channel" a legal neighbourhood -------------------
+@dataclass(frozen=True)
+class LedgerMove:
+    """replace the ledger (n, o) of one (layer, component, sign) channel by another — the bounded lattice is finite
+    ((m+1)² ledgers per channel), so the whole channel is a legal neighbourhood, where the reference's ±1 count
+    steps are not: from n/o a single count step jumps to (n±1)/o or n/(o±1), and 1 → 2/3 needs two steps through
+    a worse point (2/2 = 1 → 2/3) or through 0, which a greedy search never takes."""
+    key: tuple[int, int, int]
+    component: int
+    sign: int
+    n: int
+    o: int
+
+
+def apply_move(network: ref.SigmaProductNetwork, move):
+    """ref.apply_move plus LedgerMove."""
+    if isinstance(move, LedgerMove):
+        cand = network.copy()
+        layer = ref._get_layer(cand, move.key)
+        if not isinstance(layer.state, BoundedRationalQuaternionState):
+            raise TypeError("LedgerMove needs a bounded state")
+        layer.state.set(move.component, move.sign, move.n, move.o)
+        return cand
+    return ref.apply_move(network, move)
+
+
+def propose_ledger_moves(network, layer_keys, sensor, top_k_blocks: int = 4, include_side_flips: bool = True):
+    """the gradient sensor selects (layer, component) blocks as in the reference; within a block every distinct
+    ledger of both sign channels is proposed (fractions deduplicated: 1/1 and 2/2 are one move)."""
+    score = sensor["score"]
+    if score.size == 0:
+        return []
+    order = np.argsort(score.reshape(-1))[::-1]
+    blocks = []
+    for flat in order:
+        li, mu = np.unravel_index(flat, score.shape)
+        if score[li, mu] <= 0:
+            break
+        blocks.append((int(li), int(mu)))
+        if len(blocks) >= top_k_blocks:
+            break
+    proposals = []
+    for li, mu in blocks:
+        key = layer_keys[li]
+        st = ref._get_layer(network, key).state
+        if not isinstance(st, BoundedRationalQuaternionState):
+            continue
+        m = st.bound
+        for sign in range(2):
+            cur = st.fraction(mu, sign)
+            seen = {cur}
+            for n in range(m + 1):
+                for o in range(m + 1):
+                    fr = total_fraction(n, o)
+                    if fr in seen:
+                        continue
+                    seen.add(fr)
+                    proposals.append(LedgerMove(key, mu, sign, n, o))
+    if include_side_flips:
+        layer_score = np.sqrt(np.sum(score * score, axis=-1))
+        for li in np.argsort(layer_score)[::-1][:top_k_blocks]:
+            key = layer_keys[int(li)]
+            if ref._nonreal(ref._get_layer(network, key), network.primes):
+                proposals.append(ref.SideFlipMove(key))
+    return proposals

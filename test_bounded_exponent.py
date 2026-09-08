@@ -157,6 +157,23 @@ def test_search_on_the_bounded_lattice_total():
     print('   ', qsp.formula(net, coeff, names=('X₀', 'X₁'), snap=1e-3))
 
 
+def test_ledger_moves():
+    """a LedgerMove replaces one channel's ledger; the proposals of a block are every distinct fraction of both
+    channels (deduplicated: 1/1 and 2/2 are one), all inside the bound."""
+    m = 3
+    st = be.bounded_state(m, 1, 1)
+    net = be.bounded_network([ref.ProductUnit([ref.make_power_factor(0, st)])], bound=m)
+    key = (0, 0, 0)
+    cand = be.apply_move(net, be.LedgerMove(key, 0, 0, 2, 3))
+    assert cand.units[0].factors[0].exponent_layers[0].state.fractions()[0] == Fraction(2, 3)
+    assert net.units[0].factors[0].exponent_layers[0].state.fractions()[0] == 1          # the original untouched
+    props = be.propose_ledger_moves(net, [key], dict(score=np.array([[1.0, 0, 0, 0]])), include_side_flips=False)
+    fr = {(p.sign, be.total_fraction(p.n, p.o)) for p in props}
+    values = {Fraction(0), Fraction(1, 3), Fraction(1, 2), Fraction(2, 3), Fraction(1), Fraction(3, 2), Fraction(2), Fraction(3)}
+    assert fr == {(0, v) for v in values - {Fraction(1)}} | {(1, v) for v in values - {Fraction(0)}}
+    assert len(props) == len(fr)
+
+
 if __name__ == '__main__':
     for name, fn in list(globals().items()):
         if name.startswith('test_') and callable(fn):

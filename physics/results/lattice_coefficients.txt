@@ -1,0 +1,133 @@
+
+Coefficients on the lattice: a constant input node e and a leading factor e^{W} per unit instead of the readout A.
+
+    Z = Σ_n A_n · P_n              (A_n: quaternion least squares, the reference)
+    Z = Σ_n [e^{W_n}] · P_n        (A_n ≡ 1; W_n a bounded rational-quaternion ledger, searched like any exponent)
+    Z = Σ_n a_n [e^{W_n}] · P_n    (middle: the direction on the lattice, the magnitude a_n ∈ ℝ by least squares)
+
+Teacher (2 data inputs + the constant e, bound m = 3 = number of input nodes):
+
+    y = e^{1/2 + (2/3) i} · X₀^{1/2}  +  e^{−1 + (1/3) j} · X₁²
+
+Every search starts from X₀ · X₁ with A = 1 (the coefficient ledger balanced: 1/1 − 1/1 = 0 on every component, so
+that every ±1 move is live — the empty ledger 0/0 is a plateau, shown as mode B0).   python physics/lattice_coefficients.py
+
+teacher: [Exp((1/2 + 2/3i)·Log e)·Exp((1/2)·Log X₀)]  +  [Exp((−1 + 1/3j)·Log e)·Exp((2)·Log X₁)]
+         A₁ = [1.295709 1.019519 0.       0.      ]   A₂ = [0.34763  0.       0.120368 0.      ]
+
+== A  readout LS (reference)
+  seed 0: mse 3.66e-26  steps  2  evaluated   18    0.0s  exact
+    (1.2957 + 1.0195i + ≈0j + ≈0k)·[Exp((1/2)·Log X₀)]  +  (0.3476 + ≈0i + 0.1204j + ≈0k)·[Exp((2)·Log X₁)]
+    path: 3.6e-02 → 2.9e-02 → 3.7e-26
+  seed 1: mse 3.75e-26  steps  2  evaluated   18    0.0s  exact
+  seed 2: mse 3.70e-26  steps  2  evaluated   18    0.0s  exact
+  seed 3: mse 3.73e-26  steps  2  evaluated   18    0.0s  exact
+  seed 4: mse 3.72e-26  steps  2  evaluated   18    0.0s  exact
+  seed 5: mse 4.03e-26  steps  2  evaluated   18    0.0s  exact
+  seed 6: mse 3.69e-26  steps  2  evaluated   18    0.0s  exact
+  seed 7: mse 3.70e-26  steps  2  evaluated   18    0.0s  exact
+  8/8 exact;  median steps 2, median evaluations 18, median 0.0s
+
+== B  A ≡ 1, coefficient on lattice
+  seed 0: mse 8.00e-02  steps  2  evaluated   95    0.1s  exponents wrong
+    [Exp((i)·Log e)·Exp((1/2)·Log X₀)]  +  [Exp((0)·Log e)·Exp((1)·Log X₁)]
+    path: 6.6e-01 → 8.3e-02 → 8.0e-02
+  seed 1: mse 8.33e-02  steps  1  evaluated   66    0.1s  exponents wrong
+  seed 2: mse 8.29e-02  steps  2  evaluated  105    0.1s  exponents wrong
+  seed 3: mse 8.60e-02  steps  2  evaluated  105    0.1s  exponents wrong
+  seed 4: mse 8.19e-02  steps  2  evaluated  101    0.1s  exponents wrong
+  seed 5: mse 9.00e-02  steps  2  evaluated  105    0.1s  exponents wrong
+  seed 6: mse 8.42e-02  steps  2  evaluated   95    0.1s  exponents wrong
+  seed 7: mse 8.40e-02  steps  1  evaluated   66    0.1s  exponents wrong
+  0/8 exact;  median steps 2, median evaluations 98, median 0.1s
+
+== B0 same, empty ledger seed
+  seed 0: mse 5.20e-01  steps  1  evaluated    3    0.0s  exponents wrong
+    [Exp((0)·Log e)·Exp((0)·Log X₀)]  +  [Exp((0)·Log e)·Exp((1)·Log X₁)]
+    path: 6.6e-01 → 5.2e-01
+  seed 1: mse 5.33e-01  steps  1  evaluated    3    0.0s  exponents wrong
+  seed 2: mse 5.33e-01  steps  1  evaluated    3    0.0s  exponents wrong
+  seed 3: mse 5.43e-01  steps  1  evaluated    3    0.0s  exponents wrong
+  seed 4: mse 5.35e-01  steps  1  evaluated    3    0.0s  exponents wrong
+  seed 5: mse 5.41e-01  steps  1  evaluated    3    0.0s  exponents wrong
+  seed 6: mse 5.42e-01  steps  1  evaluated    3    0.0s  exponents wrong
+  seed 7: mse 5.33e-01  steps  1  evaluated    3    0.0s  exponents wrong
+  0/8 exact;  median steps 1, median evaluations 3, median 0.0s
+
+== C  direction lattice + real LS
+  seed 0: mse 6.06e-02  steps  2  evaluated   83    0.1s  exponents wrong
+    (1.2212)·[Exp((i)·Log e)·Exp((1/2)·Log X₀)]  +  (0.9900)·[Exp((0)·Log e)·Exp((1)·Log X₁)]
+    path: 4.8e-01 → 7.6e-02 → 6.1e-02
+  seed 1: mse 6.61e-02  steps  2  evaluated   86    0.1s  exponents wrong
+  seed 2: mse 6.38e-02  steps  2  evaluated   86    0.1s  exponents wrong
+  seed 3: mse 6.59e-02  steps  2  evaluated   86    0.1s  exponents wrong
+  seed 4: mse 6.26e-02  steps  2  evaluated   83    0.1s  exponents wrong
+  seed 5: mse 6.82e-02  steps  2  evaluated   83    0.1s  exponents wrong
+  seed 6: mse 6.24e-02  steps  2  evaluated   83    0.1s  exponents wrong
+  seed 7: mse 6.64e-02  steps  2  evaluated   83    0.1s  exponents wrong
+  0/8 exact;  median steps 2, median evaluations 83, median 0.1s
+
+== A' readout LS, ledger moves
+  seed 0: mse 3.66e-26  steps  3  evaluated  423    0.2s  exact
+    (1.2957 + 1.0195i + ≈0j + ≈0k)·[Exp((1/2)·Log X₀)]  +  (0.3476 + ≈0i + 0.1204j + ≈0k)·[Exp((2)·Log X₁)]
+    path: 3.6e-02 → 2.6e-02 → 6.9e-03 → 3.7e-26
+  seed 1: mse 3.75e-26  steps  3  evaluated  423    0.2s  exact
+  seed 2: mse 3.70e-26  steps  3  evaluated  423    0.2s  exact
+  seed 3: mse 3.73e-26  steps  3  evaluated  423    0.2s  exact
+  seed 4: mse 3.72e-26  steps  3  evaluated  423    0.2s  exact
+  seed 5: mse 4.03e-26  steps  3  evaluated  423    0.2s  exact
+  seed 6: mse 3.69e-26  steps  3  evaluated  423    0.2s  exact
+  seed 7: mse 3.70e-26  steps  3  evaluated  423    0.2s  exact
+  8/8 exact;  median steps 3, median evaluations 423, median 0.2s
+
+== B' A ≡ 1, ledger moves
+  seed 0: mse 3.88e-02  steps  3  evaluated  369    0.2s  exponents wrong
+    [Exp((i)·Log e)·Exp((2/3)·Log X₀)]  +  [Exp((0)·Log e)·Exp((1 + 1/3j)·Log X₁)]
+    path: 6.6e-01 → 8.3e-02 → 5.5e-02 → 3.9e-02
+  seed 1: mse 4.03e-02  steps  3  evaluated  365    0.2s  exponents wrong
+  seed 2: mse 3.85e-02  steps  3  evaluated  365    0.2s  exponents wrong
+  seed 3: mse 3.68e-02  steps  3  evaluated  362    0.2s  exponents wrong
+  seed 4: mse 3.84e-02  steps  3  evaluated  363    0.2s  exponents wrong
+  seed 5: mse 4.09e-02  steps  3  evaluated  365    0.2s  exponents wrong
+  seed 6: mse 3.79e-02  steps  3  evaluated  369    0.2s  exponents wrong
+  seed 7: mse 3.71e-02  steps  3  evaluated  366    0.2s  exponents wrong
+  0/8 exact;  median steps 3, median evaluations 365, median 0.2s
+
+== B0' A ≡ 1, ledger moves, empty seed
+  seed 0: mse 3.88e-02  steps  3  evaluated  425    0.2s  exponents wrong
+    [Exp((i)·Log e)·Exp((2/3)·Log X₀)]  +  [Exp((0)·Log e)·Exp((1 + 1/3j)·Log X₁)]
+    path: 6.6e-01 → 8.3e-02 → 5.5e-02 → 3.9e-02
+  seed 1: mse 4.03e-02  steps  3  evaluated  421    0.2s  exponents wrong
+  seed 2: mse 3.85e-02  steps  3  evaluated  421    0.2s  exponents wrong
+  seed 3: mse 3.68e-02  steps  3  evaluated  418    0.2s  exponents wrong
+  seed 4: mse 3.84e-02  steps  3  evaluated  423    0.2s  exponents wrong
+  seed 5: mse 4.09e-02  steps  3  evaluated  421    0.2s  exponents wrong
+  seed 6: mse 3.79e-02  steps  3  evaluated  425    0.2s  exponents wrong
+  seed 7: mse 3.71e-02  steps  3  evaluated  418    0.2s  exponents wrong
+  0/8 exact;  median steps 3, median evaluations 421, median 0.2s
+
+== C' direction lattice + real LS, ledger moves
+  seed 0: mse 3.16e-02  steps  3  evaluated  381    0.4s  exponents wrong
+    (1.1205)·[Exp((i)·Log e)·Exp((2/3)·Log X₀)]  +  (0.9986)·[Exp((0)·Log e)·Exp((1 + 1/3j)·Log X₁)]
+    path: 4.8e-01 → 7.6e-02 → 4.9e-02 → 3.2e-02
+  seed 1: mse 3.19e-02  steps  3  evaluated  375    0.3s  exponents wrong
+  seed 2: mse 3.03e-02  steps  3  evaluated  375    0.3s  exponents wrong
+  seed 3: mse 2.79e-02  steps  3  evaluated  373    0.3s  exponents wrong
+  seed 4: mse 3.02e-02  steps  3  evaluated  379    0.3s  exponents wrong
+  seed 5: mse 3.00e-02  steps  3  evaluated  375    0.3s  exponents wrong
+  seed 6: mse 2.98e-02  steps  3  evaluated  381    0.3s  exponents wrong
+  seed 7: mse 2.84e-02  steps  3  evaluated  383    0.4s  exponents wrong
+  0/8 exact;  median steps 3, median evaluations 377, median 0.3s
+
+== D  LS proposes → snap Log A to the lattice → ledger moves with A ≡ 1
+  seed 0: mse 0.00e+00  steps  3  evaluated  128    0.1s  exact
+    [Exp((1/2 + 2/3i)·Log e)·Exp((1/2)·Log X₀)]  +  [Exp((−1 + 1/3j)·Log e)·Exp((2)·Log X₁)]
+    path: 3.6e-02 → 2.9e-02 → 3.7e-26 → 0.0e+00
+  seed 1: mse 0.00e+00  steps  3  evaluated  121    0.1s  exact
+  seed 2: mse 0.00e+00  steps  3  evaluated  125    0.1s  exact
+  seed 3: mse 0.00e+00  steps  3  evaluated  121    0.1s  exact
+  seed 4: mse 0.00e+00  steps  3  evaluated  124    0.1s  exact
+  seed 5: mse 0.00e+00  steps  3  evaluated  123    0.1s  exact
+  seed 6: mse 0.00e+00  steps  3  evaluated  123    0.1s  exact
+  seed 7: mse 0.00e+00  steps  3  evaluated  120    0.1s  exact
+  8/8 exact;  median steps 3, median evaluations 123, median 0.1s

@@ -95,6 +95,30 @@ The exponent set at bound m is finite: m = 2 gives {0, ½, 1, 2} per channel, m 
 and the channel difference doubles it around 0.  The count in [0, m] is what the search moves ±1; the fraction is what
 the layer evaluates.
 
+### Coefficients on the lattice (a constant input node)
+
+With A ≡ 1 the readout is gone, and a coefficient can only come from a constant input node e = (e, 0, 0, 0) and a
+leading factor e^{W_n} = Exp(W_n · Log e) = Exp(W_n) in each product unit — W_n = Log A_n as a ledger.  With A ≡ 1
+and no constant node the network is not universal: at X = 1 every product is its right basis, so Z(1) ∈ ℤ⁴.
+`physics/lattice_coefficients.py` (teacher y = e^{1/2 + (2/3)i}·X₀^{1/2} + e^{−1 + (1/3)j}·X₁², m = 3 = the three
+input nodes, 8 data seeds; `physics/results/lattice_coefficients.txt`):
+
+| search | readout | moves | exact |
+|---|---|---|---|
+| A  reference | quaternion least squares | ±1 counts | **8/8** |
+| B  coefficient on the lattice, A ≡ 1 | none | ±1 counts | 0/8 (stuck at MSE 8e-2 after 2 steps) |
+| B′ same | none | any ledger of a channel (`LedgerMove`) | 0/8 (stuck at 4e-2 after 3 steps) |
+| C, C′ direction on the lattice, magnitude real LS | real scalar LS | either | 0/8 |
+| **D  LS proposes, the lattice decides** | LS → snap Log A to the nearest ledger → A ≡ 1 | ledger moves after the snap | **8/8, MSE 0** |
+
+The lattice coefficient loses the variable projection: with A solved exactly for every exponent proposal (A), the
+loss over exponents is clean, but with A on the lattice a wrong coefficient makes the best exponent wrong and a
+greedy coordinate search stops in a coupled local minimum, whatever the neighbourhood.  What works is the pattern of
+the complex unit's learning rule: the continuous fit is the proposal, the lattice is the decision, and the exact
+evaluation after the snap verifies it (here MSE exactly 0: the found network *is* the teacher, with no float in it).
+The empty ledger 0/0 is a plateau for ±1 count moves (every single step leaves the exponent 0), so a neutral seed is
+the balanced ledger 1/1 − 1/1; ledger moves have no plateau.
+
 ## The demos
 
 `physics/demos.py` → `physics/results/demos.txt` (CPU, ~40 s):
@@ -118,6 +142,7 @@ git clone https://github.com/PureTearsDropped/RationalQuaternionSigmaProduct
 cd RationalQuaternionSigmaProduct && pip install -r requirements.txt
 python test_rational_quaternion_sigma_product.py    # reserved words, Hamilton table, agreement with the reference, the boundary
 python test_bounded_exponent.py                      # x^(n/o), 0 ≤ n, o ≤ m: ledger, unroll, bounded search (reference and Tot)
+python physics/lattice_coefficients.py               # coefficients on the lattice via a constant input node, 5 search modes
 python physics/demos.py                              # the four demos, reference vs total
 python physics/parity_check.py                       # 60 random structures, guards on/off, float32/float64 (~5 min)
 python flexible_rational_quaternion_sigma_product.py # the reference's own demos (NumPy + PyTorch)
