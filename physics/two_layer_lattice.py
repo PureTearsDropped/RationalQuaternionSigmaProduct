@@ -208,18 +208,9 @@ def main():
           f"exponents {tuple(str(f) for f in exponents_of(n1, n2))}  W_a−W_b {coef_ratio_lattice(n1)}  {'exact' if ok else 'wrong'}")
     P(f"  {wins}/8\n")
 
-    P("== (ii) inner coefficients float (alternating LS/LM), the same discrete search over the exponents")
-    wins = 0
-    for s in range(1):                                  # one seed: each candidate runs an LM fit (~10 min per seed)
-        x, y = data(s)
-        t0 = time.time()
-        mse, n1, n2, A1, A2, steps, ev = search_float(x, y, *seed(False), ONES(2), max_steps=4, iters=6)
-        ratio = np.linalg.norm(A1[0]) / np.linalg.norm(A1[1])
-        ok = exponents_of(n1, n2) == TRUE_X and abs(ratio - math.exp(1.5)) < 1e-6 * math.exp(1.5) and mse / np.var(y) < 1e-20
-        wins += ok
-        P(f"  seed {s}: rel mse {mse/np.var(y):.2e}  steps {steps}  evals {ev}  {time.time()-t0:5.1f}s  "
-          f"exponents {tuple(str(f) for f in exponents_of(n1, n2))}  |A_a|/|A_b| {ratio:.6f} (e^1.5 = {math.exp(1.5):.6f})  {'exact' if ok else 'wrong'}")
-    P(f"  {wins}/1\n")
+    P("== (ii) inner coefficients float (alternating LS/LM per candidate): not run — an LM fit per discrete candidate "
+      "took >15 min per seed and exhausted memory; two_layer_float_proposes.py is the float baseline (LM over every "
+      "inner parameter at once, then snap).\n")
 
     P("== (iii) off-lattice inner coefficient W_a = 0.53: (i) then float refit of A₁ from the lattice point")
     for s in range(4):

@@ -12,3 +12,8 @@ Compared with the single-/pair-move lattice searches that stop at (w₂ = 1, v =
   seed 6: LM  38 iters rel mse 1.60e-28  p = (a +1.4511, b -0.0489, w₁ 1.0000, w₂ 2.0000, v 0.5000)  → snap ('3/2', '0', '1', '2', '1/2')  lattice rel mse 1.55e-28  51.0s  exact
   seed 7: LM  32 iters rel mse 1.73e-28  p = (a +1.4327, b -0.0673, w₁ 1.0000, w₂ 2.0000, v 0.5000)  → snap ('3/2', '0', '1', '2', '1/2')  lattice rel mse 1.48e-28  43.1s  exact
   8/8   (gauge: a − b = 3/2 is what is checked; the LM may land on any gauge copy)
+
+== off-lattice inner coefficient W_a = 0.53 (W_b = −1, ratio a − b = 1.53)
+  seed 0: LM rel mse 1.48e-28 (a−b 1.5300) → snap ('3/2', '0', '1', '2', '1/2') lattice rel mse 8.46e-06 → refit from the lattice point: rel mse 1.24e-28 (a−b 1.530000, w₂ 2.000000, v 0.500000) in 32 iters
+  seed 1: LM rel mse 1.45e-28 (a−b 1.5300) → snap ('3/2', '0', '1', '2', '1/2') lattice rel mse 8.77e-06 → refit from the lattice point: rel mse 1.36e-28 (a−b 1.530000, w₂ 2.000000, v 0.500000) in 34 iters
+  seed 2: LM rel mse 1.64e-28 (a−b 1.5300) → snap ('3/2', '0', '1', '2', '1/2') lattice rel mse 8.92e-06 → refit from the lattice point: rel mse 1.48e-28 (a−b 1.530000, w₂ 2.000000, v 0.500000) in 29 iters

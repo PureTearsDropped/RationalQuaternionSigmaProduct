@@ -109,5 +109,28 @@ def main():
     Path(__file__).resolve().parent.joinpath("results", "two_layer_float_proposes.txt").write_text("\n".join(out))
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and "--off" not in sys.argv:
     main()
+
+
+def off_lattice(seeds=(0, 1, 2), wa_true=0.53):
+    """(iii′) teacher inner coefficient off the lattice: LM proposes → snap (the lattice floor) → LM refit from the
+    lattice point recovers the float value."""
+    out = []
+    P = lambda *a: (print(*a, flush=True), out.append(" ".join(str(s) for s in a)))
+    P(f"== off-lattice inner coefficient W_a = {wa_true} (W_b = −1, ratio a − b = {wa_true + 1})")
+    for s in seeds:
+        x, y = data(s, wa_true=wa_true)
+        p, mse_f, A2, it = lm_fit(x, y, [0, 0, 1, 1, 1])
+        n1, n2, fr = snap_all(p)
+        mse_l, _ = forward_fit(x, y, n1, n2)
+        p_l = [float(f) for f in fr]
+        p2, mse_r, _, it2 = lm_fit(x, y, p_l, iters=100)
+        P(f"  seed {s}: LM rel mse {mse_f/np.var(y):.2e} (a−b {p[0]-p[1]:.4f}) → snap {tuple(str(f) for f in fr)} lattice rel mse {mse_l/np.var(y):.2e}"
+          f" → refit from the lattice point: rel mse {mse_r/np.var(y):.2e} (a−b {p2[0]-p2[1]:.6f}, w₂ {p2[3]:.6f}, v {p2[4]:.6f}) in {it2} iters")
+    with open(Path(__file__).resolve().parent / "results" / "two_layer_float_proposes.txt", "a") as fh:
+        fh.write("\n\n" + "\n".join(out))
+
+
+if __name__ == "__main__" and "--off" in sys.argv:
+    off_lattice()

@@ -141,6 +141,27 @@ behind the ridge readout and three to five behind the unregularised one.  The la
 is the same fact as "only a sparse rational solution is evidence": a fit that needs cancelling coefficients is not
 on any lattice.
 
+**Two layers, the inner coefficients on the lattice** (`physics/two_layer_lattice.py`, `two_layer_pairs.py`,
+`two_layer_float_proposes.py`).  Teacher Z₁ = e^{1/2}·X₁ + e^{−1}·X₂², y = A₂·Z₁^{1/2}·X₃, from the seed
+Z₁ = X₁ + X₂, y = A₂·Z₁·X₃; the inner coefficients sit inside layer 2's Log, where a least-squares readout cannot
+reach them — the case where the lattice was hoped to make the network solvable.  Success is gauge-invariant
+(Z₁ ↦ cZ₁ is absorbed by A₂): the ratio e^{3/2} and the exponents (1, 2, ½).
+
+| search over the inner parameters | outer A₂ | 8 seeds |
+|---|---|---|
+| ledger moves, one channel at a time | LS | 0/8 — stops at (w₂ = 1, v = 2/3, ratio e^{1/3}), relative MSE 8e-4 |
+| ledger moves, two channels at once (4 550 candidates/step) | LS | 0/8 — the same point, reached in one step |
+| **LM over every inner parameter (a, b, w₁, w₂, v) with A₂ by LS, then snap all to the lattice** | LS | **8/8, relative MSE 1e-28** |
+
+With A₂ solved by least squares for every candidate the variable projection is back, but the inner parameters
+stay coupled: leaving the (w₂ = 1) minimum needs w₂, v and the coefficient ratio to move together, and no
+single or pair move improves.  A continuous fit of the inner parameters walks there in 30–40 LM steps from the
+seed, and the lattice then decides and verifies (the LM lands on a gauge copy, a − b = 3/2 with b ≈ −0.05, which
+the snap maps to (3/2, 0) — a gauge should be fixed before snapping, since the rounding of a and b is independent).
+Off the lattice (inner coefficient e^{0.53}): the snap sits at the floor (relative MSE 8.5e-6), and an LM refit from
+the lattice point recovers 1.53 to machine precision.  An LM per discrete candidate (the alternating scheme) was
+too expensive to complete at this size (>15 min per seed).
+
 ## The demos
 
 `physics/demos.py` → `physics/results/demos.txt` (CPU, ~40 s):
@@ -167,6 +188,7 @@ python test_bounded_exponent.py                      # x^(n/o), 0 ≤ n, o ≤ m
 python physics/lattice_coefficients.py               # coefficients on the lattice via a constant input node, 5 search modes
 python physics/lattice_approximation.py              # off-lattice targets: bound m and unit sweeps (~4 min)
 python physics/lattice_ridge.py                      # ridge on the proposal before the snap, the Farey floor (~15 min)
+python physics/two_layer_float_proposes.py [--off]   # two layers: LM proposes, lattice decides (8/8); --off: off-lattice inner coefficient
 python physics/demos.py                              # the four demos, reference vs total
 python physics/parity_check.py                       # 60 random structures, guards on/off, float32/float64 (~5 min)
 python flexible_rational_quaternion_sigma_product.py # the reference's own demos (NumPy + PyTorch)
