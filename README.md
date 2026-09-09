@@ -152,11 +152,16 @@ reach them — the case where the lattice was hoped to make the network solvable
 | ledger moves, one channel at a time | LS | 0/8 — stops at (w₂ = 1, v = 2/3, ratio e^{1/3}), relative MSE 8e-4 |
 | ledger moves, two channels at once (4 550 candidates/step) | LS | 0/8 — the same point, reached in one step |
 | **LM over every inner parameter (a, b, w₁, w₂, v) with A₂ by LS, then snap all to the lattice** | LS | **8/8, relative MSE 1e-28** |
+| **shortlist per site, brute force across sites** (`two_layer_shortlist.py`): each site swept alone, best k kept, all k⁵ combinations evaluated, repeat | LS | k = 2, 3: 0/8 (same minimum); **k = 4: 8/8**, 3–5 rounds, ~5 000 evaluations, 4 s |
 
 With A₂ solved by least squares for every candidate the variable projection is back, but the inner parameters
 stay coupled: leaving the (w₂ = 1) minimum needs w₂, v and the coefficient ratio to move together, and no
 single or pair move improves.  A continuous fit of the inner parameters walks there in 30–40 LM steps from the
-seed, and the lattice then decides and verifies (the LM lands on a gauge copy, a − b = 3/2 with b ≈ −0.05, which
+seed, and the lattice then decides and verifies.  The all-discrete route that does work is the user's rewrite
+pattern: shortlist candidates per site, then brute-force their combinations — the true w₂ = 2 is not on any round-1
+shortlist (the single-site sweep ranks 2/3, 1/2, 1/3, 1 ahead of it), but the k⁵ product moves the point, the
+shortlists move with it, and the true combination surfaces by round 3–5; with k ≤ 3 the product is too narrow and
+the search stops where the pair moves did (the LM lands on a gauge copy, a − b = 3/2 with b ≈ −0.05, which
 the snap maps to (3/2, 0) — a gauge should be fixed before snapping, since the rounding of a and b is independent).
 Off the lattice (inner coefficient e^{0.53}): the snap sits at the floor (relative MSE 8.5e-6), and an LM refit from
 the lattice point recovers 1.53 to machine precision.  An LM per discrete candidate (the alternating scheme) was
